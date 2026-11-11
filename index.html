@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<title>Basic Cable</title>
+<link rel="stylesheet" href="./app.css">
+<!-- The engines are the project's Node modules, unchanged. These names stand in for the few Node
+     built-ins they import and never call on a page. -->
+<script type="importmap">
+{ "imports": {
+  "node:crypto": "./shims/crypto.js",
+  "node:fs": "./shims/fs.js",
+  "node:module": "./shims/module.js",
+  "node:os": "./shims/os.js",
+  "node:path": "./shims/path.js",
+  "node:timers/promises": "./shims/timers-promises.js"
+} }
+</script>
+<!-- hls.js 1.7.3 (Apache-2.0) plays Plex's HLS stream where the browser has no HLS of its own.
+     The integrity value is the hash jsDelivr publishes for this file. -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.3/dist/hls.min.js" integrity="sha256-oS5+4c1kpp3NsxQVfkXa/LpwW/sLFEC3k1yyZdN0Qj4=" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- The TV's screen, 1920 x 1080, scaled to the window. main.js places the video, the show panel
+     and the grid where the TV's guide has them. -->
+<div id="stage" data-theme="cable-box" data-profile="grownups">
+  <div id="topbar">
+    <img id="logo" src="./images/logo.png" alt="Basic Cable">
+    <div id="topright">
+      <span id="clock"></span>
+      <button type="button" id="navSettings" class="nav">SETTINGS</button>
+      <button type="button" id="pill" class="nav" aria-label="Switch profile">
+        <svg width="28" height="18" viewBox="0 0 28 18" aria-hidden="true"><path d="M1 1 L13 9 L1 17 Z"></path><rect x="17" y="1" width="3.5" height="16"></rect><rect x="23" y="1" width="3.5" height="16"></rect></svg>
+        <span id="pillLabel">GROWN-UPS</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="panel">
+    <img id="panelArt" alt="" hidden>
+    <div id="panelFade"></div>
+    <div id="panelText">
+      <div id="panelLine1"><span id="panelChannel"></span><span id="panelRating" hidden></span></div>
+      <div id="panelTitleBox"><img id="panelLogo" alt="" hidden><div id="panelTitle"></div></div>
+      <div id="panelFoot"><div id="panelEpisode"></div><div id="panelWhen"></div></div>
+    </div>
+  </div>
+
+  <div id="grid">
+    <div id="gridDate"></div>
+    <div id="marks"></div>
+    <div id="rows"></div>
+    <div id="nowLine"></div>
+    <p id="notice" hidden></p>
+  </div>
+
+  <!-- The picture: the guide's video window, or the whole screen. Its overlays are sized in em,
+       and main.js sets the em from the picture's width, so a card reads the same at both sizes. -->
+  <div id="screen">
+    <video id="video" playsinline></video>
+    <div id="scan"></div>
+    <div id="haze" hidden><span id="hazeText"></span></div>
+    <div id="card" hidden>
+      <p id="cardTitle"></p>
+      <div id="cardRule"></div>
+      <p id="cardKicker"></p>
+      <p id="cardText"></p>
+      <p id="cardFoot"></p>
+    </div>
+    <div id="osd" hidden></div>
+    <div id="nowPlaying" hidden></div>
+    <div id="strip" hidden></div>
+    <div id="touch" hidden>
+      <button type="button" data-key="left" aria-label="Channel down">◀ CH</button>
+      <button type="button" data-key="back">GUIDE</button>
+      <button type="button" data-key="up">CHANNELS</button>
+      <button type="button" data-key="right" aria-label="Channel up">CH ▶</button>
+    </div>
+    <button type="button" id="soundChip" hidden>SOUND IS OFF · PRESS ANY KEY</button>
+  </div>
+
+  <div id="menu" hidden>
+    <div id="menuBox">
+      <h2 id="menuTitle"></h2>
+      <div id="menuRows"></div>
+      <p id="menuHint"></p>
+    </div>
+  </div>
+
+  <section id="gate">
+    <h2 id="gateTitle">STARTING</h2>
+    <p id="gateText"></p>
+    <p id="gateCode" hidden></p>
+    <a id="gateLink" href="https://plex.tv/link" target="_blank" rel="noopener" hidden>OPEN PLEX.TV/LINK</a>
+    <button type="button" id="gateButton" hidden></button>
+  </section>
+</div>
+<script type="module" src="./web/src/main.js"></script>
+</body>
+</html>

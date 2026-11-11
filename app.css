@@ -1,0 +1,183 @@
+/* The TV's look in a browser: the guide of docs/2026-11-04-guide-redesign-design.md, in the three
+   themes of roku/source/guide/Theme.brs and the TV's two fonts. main.js sets where the big pieces
+   sit; this file says how they look. */
+@font-face { font-family: "VT323"; src: url("./fonts/VT323-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "DM Mono"; font-weight: 400; src: url("./fonts/DMMono-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "DM Mono"; font-weight: 500; src: url("./fonts/DMMono-Medium.ttf") format("truetype"); font-display: swap; }
+
+#stage, #stage[data-theme="cable-box"] {
+  --screen: #000000; --panel: #0B0B1C; --panel-fade: rgba(11, 11, 28, 0.15); --grid: #0D0D1F; --col: #17182F;
+  --block: #1E2040; --block-past: #131428; --video: #05050D; --ink: #FFFFFF; --ink-dim: rgba(255, 255, 255, 0.72);
+  --ink-past: rgba(255, 255, 255, 0.62); --ink-muted: #8E8E93; --divider: rgba(255, 255, 255, 0.28);
+  --accent: #FFE500; --on-accent: #000F17; --live: #00D4FF; --modal: #0D0D12; --strip: rgba(0, 0, 0, 0.85); --card: #0B0B1C;
+  --display: "VT323", monospace; --clock-size: 42px; --number-size: 60px; --display-scale: 1;
+}
+#stage[data-theme="prevue"] {
+  --screen: #120B4A; --panel: #1B1464; --panel-fade: rgba(27, 20, 100, 0.15); --grid: #1B1464; --col: #25277A;
+  --block: #2E3192; --block-past: #23267A; --video: #080524; --ink: #FFFFFF; --ink-dim: rgba(255, 255, 255, 0.78);
+  --ink-past: rgba(255, 255, 255, 0.68); --ink-muted: #B9B6DA; --divider: rgba(255, 255, 255, 0.32);
+  --accent: #FFF200; --on-accent: #120B4A; --live: #FFF200; --modal: #1B1464; --strip: rgba(18, 11, 74, 0.9); --card: #1B1464;
+}
+#stage[data-theme="clean"] {
+  --screen: #121212; --panel: #181818; --panel-fade: rgba(24, 24, 24, 0.15); --grid: #181818; --col: #242424;
+  --block: #2C2C2C; --block-past: #212121; --video: #0A0A0A; --ink: #EDEDED; --ink-dim: rgba(237, 237, 237, 0.72);
+  --ink-past: rgba(237, 237, 237, 0.62); --ink-muted: #8E8E93; --divider: rgba(237, 237, 237, 0.28);
+  --accent: #4FC3F7; --on-accent: #0A1A24; --live: #4FC3F7; --modal: #181818; --strip: rgba(10, 10, 10, 0.9); --card: #181818;
+  --display: "DM Mono", monospace; --clock-size: 30px; --number-size: 42px; --display-scale: 0.7;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; overscroll-behavior: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus { outline: none; }
+
+/* --t is the type scale: 1 on a wide window, larger on an upright phone, where the stage is narrow. */
+#stage {
+  --t: 1;
+  position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden;
+  background: var(--screen); color: var(--ink);
+  font-family: "DM Mono", ui-monospace, Consolas, monospace; font-weight: 400;
+  user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+}
+
+/* ── The top bar ─────────────────────────────────────────────────────────── */
+#topbar { position: absolute; left: 40px; right: 40px; top: 18px; height: 48px; display: flex; align-items: center; justify-content: space-between; }
+#logo { height: 48px; width: auto; display: block; }
+#topright { display: flex; align-items: center; gap: 36px; }
+#clock { font-family: var(--display); font-size: var(--clock-size); color: var(--accent); white-space: nowrap; }
+#navSettings { font-weight: 500; font-size: 22px; color: var(--ink-dim); padding: 4px 10px; border-radius: 8px; border: 3px solid transparent; }
+#stage[data-profile="kids"] #navSettings { display: none; }
+#pill { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border: 2px solid var(--divider); border-radius: 22px; font-weight: 500; font-size: 22px; color: var(--ink); }
+#pill svg { fill: var(--ink-dim); }
+.nav.focus { border-color: var(--accent) !important; color: var(--ink); }
+
+/* ── The show panel ──────────────────────────────────────────────────────── */
+#panel { position: absolute; border-radius: 12px; overflow: hidden; background: var(--panel); }
+#panelArt { position: absolute; right: 0; top: 0; height: 100%; object-fit: cover; }
+#panelFade { position: absolute; inset: 0; background: linear-gradient(90deg, var(--panel) 32%, var(--panel-fade) 100%); }
+#panelText { position: absolute; left: 36px; right: 36px; top: 28px; bottom: 28px; display: flex; flex-direction: column; justify-content: space-between; }
+#panelLine1 { display: flex; align-items: center; gap: 18px; font-weight: 500; font-size: 26px; }
+#panelRating { padding: 2px 10px; border: 2px solid var(--accent); border-radius: 6px; font-size: 20px; color: var(--accent); }
+#panelTitleBox { min-height: 0; display: flex; align-items: center; }
+#panelLogo { display: block; max-width: 520px; max-height: 150px; object-fit: contain; object-position: left center; }
+#panelTitle { font-family: var(--display); font-size: calc(96px * var(--display-scale)); line-height: 0.95; max-width: 760px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+#panelFoot { display: flex; flex-direction: column; gap: 8px; }
+#panelEpisode { font-size: 30px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#panelWhen { font-weight: 500; font-size: 26px; color: var(--accent); }
+
+/* ── The grid ────────────────────────────────────────────────────────────── */
+#grid { position: absolute; background: var(--grid); overflow: hidden; }
+#gridDate { position: absolute; top: 8px; font-weight: 500; font-size: calc(22px * var(--t)); color: var(--ink-dim); white-space: nowrap; }
+.mark { position: absolute; top: 8px; padding-left: 8px; border-left: 2px solid var(--divider); font-weight: 500; font-size: calc(22px * var(--t)); line-height: 28px; white-space: nowrap; }
+.row { position: absolute; left: 0; height: 88px; }
+.plate { position: absolute; top: 0; height: 88px; display: flex; align-items: center; gap: 12px; padding: 0 12px; border-radius: 10px; background: var(--col); border: 3px solid transparent; cursor: pointer; }
+.plate.focus { border-color: var(--accent); }
+.plateNumber { min-width: 52px; flex-shrink: 0; font-family: var(--display); font-size: var(--number-size); line-height: 1; color: var(--accent); }
+.plateName { min-width: 0; overflow-wrap: anywhere; font-weight: 500; font-size: calc(19px * var(--t)); line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.blocks { position: absolute; top: 0; height: 88px; }
+.block { position: absolute; top: 0; height: 88px; border-radius: 10px; overflow: hidden; background: var(--block); display: flex; align-items: center; cursor: pointer; }
+.block .edge { width: 6px; height: 88px; flex-shrink: 0; }
+.block .arrow { flex-shrink: 0; width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+.block .arrow.l { margin-left: 8px; border-right: 12px solid currentColor; }
+.block .arrow.r { margin-right: 8px; border-left: 12px solid currentColor; }
+.block .logo { display: block; width: 112px; height: 64px; object-fit: contain; flex-shrink: 0; margin-left: 10px; }
+.block .text { min-width: 0; flex: 1 1 0; padding: 0 10px 0 12px; display: flex; flex-direction: column; gap: 4px; }
+.block .btitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; font-size: calc(25px * var(--t)); }
+.block .bsub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: calc(19px * var(--t)); color: var(--ink-dim); }
+.block.past { background: var(--block-past); color: var(--ink-past); }
+.block.past .bsub { color: var(--ink-past); }
+.block.past .logo { opacity: 0.6; }
+/* The selected block is the grid's one highlight: solid, with no edge. A logo on it gets a dark
+   plate, because many logos are yellow and would vanish on the accent. */
+.block.sel { background: var(--accent); color: var(--on-accent); }
+.block.sel .bsub { color: var(--on-accent); }
+.block.sel .edge { background: transparent !important; }
+.block.sel .logo { background: var(--on-accent); border-radius: 6px; padding: 4px; opacity: 1; }
+#nowLine { position: absolute; top: 0; width: 3px; height: 100%; background: var(--live); pointer-events: none; }
+#notice { position: absolute; left: 0; right: 0; top: 120px; margin: 0 auto; max-width: 1100px; padding: 0 40px; text-align: center; font-size: calc(26px * var(--t)); line-height: 1.5; color: var(--ink-dim); }
+
+/* ── The picture and what draws over it. 1em is the picture's width over 53.33: 36px full screen. */
+#screen { position: absolute; overflow: hidden; background: var(--video); border-radius: 12px; cursor: pointer; }
+#stage.full #screen { border-radius: 0; z-index: 5; }
+#video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+#scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.2) 3px, rgba(0, 0, 0, 0.2) 4px); }
+#stage[data-scanlines="off"] #scan { display: none; }
+#haze { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2.4em; background-color: #101014; animation: snow 0.24s steps(4) infinite; }
+#hazeText { font-weight: 500; font-size: 0.72em; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.42); background: rgba(0, 0, 0, 0.45); padding: 0.2em 0.7em; border-radius: 0.3em; }
+#stage[data-scanlines="off"] #haze { background: #000 !important; animation: none; align-items: center; padding-bottom: 0; }
+#stage[data-scanlines="off"] #hazeText { color: rgba(255, 255, 255, 0.35); background: none; }
+@keyframes snow { 0% { background-position: 0 0; } 25% { background-position: 37px 61px; } 50% { background-position: 83px 17px; } 75% { background-position: 11px 97px; } 100% { background-position: 59px 43px; } }
+@media (prefers-reduced-motion: reduce) { #haze { animation: none; } }
+
+#card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35em; padding: 1em 2em; text-align: center; background: var(--card); }
+/* In the guide's window the card is a third the size of the full screen's, so its type is set larger to stay readable. */
+#stage:not(.full) #card { font-size: 1.45em; padding: 0.6em 1em; }
+#card p { margin: 0; }
+#cardTitle { font-family: var(--display); font-size: calc(3em * var(--display-scale)); line-height: 1; color: var(--ink); }
+#cardRule { width: 9em; height: 0.14em; border-radius: 0.07em; background: var(--accent); margin: 0.2em 0 0.35em; }
+#cardKicker { font-weight: 500; font-size: 0.72em; letter-spacing: 0.12em; color: var(--ink-dim); }
+#cardText { font-weight: 500; font-size: 1.05em; line-height: 1.3; max-width: 28em; }
+#cardFoot { font-size: 0.8em; color: var(--accent); }
+#card p:empty, #cardKicker:empty + #cardText:empty { display: none; }
+
+#osd { position: absolute; left: 0; bottom: 0; padding: 2.6em 3.2em 1.2em 1.33em; min-width: 14em; background: linear-gradient(15deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.7) 45%, rgba(0, 0, 0, 0) 78%); pointer-events: none; }
+#osd .bar { width: 1.33em; height: 0.11em; margin-bottom: 0.22em; }
+#osd .ch { font-weight: 500; font-size: 0.555em; }
+#osd .name { font-family: var(--display); font-size: calc(1.22em * var(--display-scale)); line-height: 1.05; }
+#osd .what { font-size: 0.667em; color: rgba(255, 255, 255, 0.85); margin-top: 0.3em; max-width: 34em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#osd .time { font-size: 0.5em; color: var(--ink-muted); margin-top: 0.35em; }
+
+#strip { position: absolute; left: 0; right: 0; bottom: 0; height: 4.4em; background: var(--strip); overflow: hidden; }
+#stripCards { position: absolute; top: 0.75em; left: 0; display: flex; gap: 0.33em; transition: transform 0.15s ease-out; }
+.scard { position: relative; width: 8.6em; height: 2.9em; flex-shrink: 0; background: rgba(255, 255, 255, 0.1); border: 0.08em solid transparent; overflow: hidden; cursor: pointer; }
+.scard .top { height: 0.11em; }
+.scard .line { display: flex; align-items: baseline; gap: 0.3em; padding: 0.12em 0.35em 0; }
+.scard .num { font-family: var(--display); font-size: calc(1.05em * var(--display-scale)); line-height: 1; }
+.scard .nm { font-weight: 500; font-size: 0.5em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scard .on { font-size: 0.47em; padding: 0.15em 0.75em 0; color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scard.focus { background: #05050D; }
+.scard.focus .on { color: var(--ink); }
+
+#nowPlaying { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 1em; align-items: flex-end; padding: 3em 1.33em 1.2em; background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.88) 62%, rgba(0, 0, 0, 0) 100%); }
+#nowPlaying img { width: 5.2em; height: 7.8em; object-fit: cover; border-radius: 0.2em; flex-shrink: 0; background: var(--block); }
+#nowPlaying .np { min-width: 0; display: flex; flex-direction: column; gap: 0.22em; }
+#nowPlaying .npCh { font-weight: 500; font-size: 0.6em; }
+#nowPlaying .npTitle { font-family: var(--display); font-size: calc(1.9em * var(--display-scale)); line-height: 1; }
+#nowPlaying .npEp { font-size: 0.72em; }
+#nowPlaying .npWhen { font-weight: 500; font-size: 0.62em; color: var(--accent); }
+#nowPlaying .npSum { font-size: 0.55em; line-height: 1.4; color: var(--ink-dim); max-width: 60em; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+#nowPlaying .npNext { font-size: 0.55em; color: var(--ink-muted); }
+#nowPlaying .chip { margin-left: 0.8em; padding: 0.05em 0.45em; border: 0.1em solid var(--accent); border-radius: 0.3em; color: var(--accent); font-size: 0.85em; }
+
+#touch { position: absolute; right: 1em; top: 1em; display: flex; gap: 0.4em; }
+#touch button { font-weight: 500; font-size: 0.55em; padding: 0.55em 0.9em; border-radius: 0.5em; background: rgba(0, 0, 0, 0.7); border: 0.1em solid var(--divider); color: var(--ink); }
+#soundChip { position: absolute; left: 0.8em; top: 0.8em; font-weight: 500; font-size: 0.62em; padding: 0.4em 0.8em; border-radius: 0.4em; background: var(--accent); color: var(--on-accent); }
+
+/* ── Settings and the profile switch ─────────────────────────────────────── */
+#menu { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.62); }
+#menuBox { width: min(820px, 92%); padding: 34px 36px 28px; border-radius: 12px; background: var(--modal); border: 2px solid var(--divider); }
+#menuTitle { margin: 0 0 18px; font-family: var(--display); font-weight: 400; font-size: calc(64px * var(--display-scale)); line-height: 1; color: var(--accent); }
+.mrow { width: 100%; display: flex; justify-content: space-between; gap: 24px; padding: 14px 18px; border-radius: 8px; font-weight: 500; font-size: 28px; text-align: left; }
+.mrow .val { color: var(--ink-dim); }
+.mrow.focus { background: var(--accent); color: var(--on-accent); }
+.mrow.focus .val { color: var(--on-accent); }
+#menuHint { margin: 18px 0 0; font-size: 20px; line-height: 1.5; color: var(--ink-dim); }
+
+/* ── The gate: sign-in, loading and anything that stops the guide ────────── */
+#gate { position: absolute; inset: 0; z-index: 9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; padding: 80px 60px; text-align: center; background: var(--screen); }
+#gate h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: calc(92px * var(--display-scale)); line-height: 1; color: var(--accent); }
+#gateText { margin: 0; max-width: 1100px; font-size: 30px; line-height: 1.45; color: var(--ink-dim); }
+#gateCode { margin: 0; font-family: var(--display); font-size: calc(240px * var(--display-scale)); line-height: 0.9; letter-spacing: 0.12em; color: var(--ink); }
+#gateLink, #gateButton { font-weight: 500; font-size: 30px; padding: 14px 28px; border-radius: 10px; text-decoration: none; }
+#gateLink { color: var(--ink); border: 2px solid var(--divider); }
+#gateButton { background: var(--accent); color: var(--on-accent); }
+
+/* An upright phone: the stage is 820 wide, so the top bar and the panel tighten up. */
+#stage.compact #topbar { left: 20px; right: 20px; }
+#stage.compact #topright { gap: 14px; }
+#stage.compact #pill svg { display: none; }
+#stage.compact #panelText { left: 22px; right: 22px; top: 18px; bottom: 18px; }
+#stage.compact #panelTitle { font-size: calc(68px * var(--display-scale)); -webkit-line-clamp: 1; }
+#stage.compact #panelLogo { max-width: 420px; max-height: 88px; }
+#gate h2, #menuTitle { text-transform: uppercase; }
